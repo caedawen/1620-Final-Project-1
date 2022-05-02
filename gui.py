@@ -9,7 +9,13 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from random import *
+scissors = "Scissors.png"
+paper = "Paper.png"
+rock = "Rock.png"
+comp_choice = ""
+player_wins = 0
+comp_wins = 0
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -32,33 +38,48 @@ class Ui_MainWindow(object):
         self.roundsInput.setGeometry(QtCore.QRect(250, 170, 81, 61))
         self.roundsInput.setAlignment(QtCore.Qt.AlignCenter)
         self.roundsInput.setObjectName("roundsInput")
-        self.rockButton = QtWidgets.QRadioButton(self.centralwidget)
-        self.rockButton.setGeometry(QtCore.QRect(160, 250, 61, 17))
-        self.rockButton.setObjectName("rockButton")
-        self.buttonGroup = QtWidgets.QButtonGroup(MainWindow)
-        self.buttonGroup.setObjectName("buttonGroup")
-        self.buttonGroup.addButton(self.rockButton)
-        self.paperButton = QtWidgets.QRadioButton(self.centralwidget)
-        self.paperButton.setGeometry(QtCore.QRect(260, 250, 61, 17))
-        self.paperButton.setObjectName("paperButton")
-        self.buttonGroup.addButton(self.paperButton)
-        self.scissorsButton = QtWidgets.QRadioButton(self.centralwidget)
-        self.scissorsButton.setGeometry(QtCore.QRect(360, 250, 82, 17))
-        self.scissorsButton.setObjectName("scissorsButton")
-        self.buttonGroup.addButton(self.scissorsButton)
-        self.throwButton = QtWidgets.QPushButton(self.centralwidget)
-        self.throwButton.setGeometry(QtCore.QRect(250, 280, 75, 23))
-        self.throwButton.setObjectName("throwButton")
+        self.shootButton = QtWidgets.QPushButton(self.centralwidget)
+        self.shootButton.setGeometry(QtCore.QRect(250, 310, 75, 23))
+        self.shootButton.setObjectName("shootButton")
+        self.roundsButton = QtWidgets.QPushButton(self.centralwidget)
+        self.roundsButton.setObjectName("roundsButton")
+        self.roundsButton.setGeometry(QtCore.QRect(250, 230, 75, 23))
         self.winnerMessage = QtWidgets.QLabel(self.centralwidget)
         self.winnerMessage.setGeometry(QtCore.QRect(210, 320, 161, 20))
         self.winnerMessage.setText("")
         self.winnerMessage.setObjectName("winnerMessage")
         self.playerWins = QtWidgets.QLabel(self.centralwidget)
-        self.playerWins.setGeometry(QtCore.QRect(40, 350, 151, 16))
+        self.playerWins.setGeometry(QtCore.QRect(40, 350, 81, 16))
         self.playerWins.setObjectName("playerWins")
         self.computerWins = QtWidgets.QLabel(self.centralwidget)
-        self.computerWins.setGeometry(QtCore.QRect(350, 350, 151, 16))
+        self.computerWins.setGeometry(QtCore.QRect(470, 350, 151, 16))
         self.computerWins.setObjectName("computerWins")
+        self.choiceInput = QtWidgets.QLineEdit(self.centralwidget)
+        self.choiceInput.setGeometry(QtCore.QRect(240, 280, 113, 20))
+        self.choiceInput.setObjectName("choiceInput")
+        self.choiceLabel = QtWidgets.QLabel(self.centralwidget)
+        self.choiceLabel.setGeometry(QtCore.QRect(180, 250, 251, 20))
+        self.choiceLabel.setObjectName("choiceLabel")
+        self.playerChoiceImage = QtWidgets.QLabel(self.centralwidget)
+        self.playerChoiceImage.setGeometry(QtCore.QRect(30, 60, 131, 131))
+        self.playerChoiceImage.setText("")
+        self.playerChoiceImage.setPixmap(QtGui.QPixmap())
+        self.playerChoiceImage.setObjectName("playerChoiceImage")
+        self.computerChoiceImage = QtWidgets.QLabel(self.centralwidget)
+        self.computerChoiceImage.setGeometry(QtCore.QRect(480, 60, 141, 121))
+        self.computerChoiceImage.setText("")
+        self.computerChoiceImage.setPixmap(QtGui.QPixmap())
+        self.computerChoiceImage.setObjectName("computerChoiceImage")
+        self.playerChoiceLabel = QtWidgets.QLabel(self.centralwidget)
+        self.playerChoiceLabel.setGeometry(QtCore.QRect(20, 10, 131, 20))
+        self.playerChoiceLabel.setObjectName("playerChoiceLabel")
+        self.computerChoiceLabel = QtWidgets.QLabel(self.centralwidget)
+        self.computerChoiceLabel.setGeometry(QtCore.QRect(480, 10, 131, 16))
+        self.computerChoiceLabel.setObjectName("computerChoiceLabel")
+        self.winnerLabel = QtWidgets.QLabel(self.centralwidget)
+        self.winnerLabel.setGeometry(QtCore.QRect(180, 370, 231, 31))
+        self.winnerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.winnerLabel.setObjectName("winnerLabel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
@@ -67,33 +88,79 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.throwButton.clicked.connect(self.clicked)
+        self.roundsButton.clicked.connect(self.rounds_clicked)
+        self.shootButton.clicked.connect(self.shoot_clicked)
+        self.shootButton.hide()
+        self.choiceInput.hide()
+        self.choiceLabel.hide()
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-
+        player_wins = 0
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.welcomeMessage.setText(_translate("MainWindow", "Welcome to the Rock Paper Scissors game!"))
         self.roundsLabel.setText(_translate("MainWindow", "How many rounds would you like to play?"))
-        self.rockButton.setText(_translate("MainWindow", "Rock"))
-        self.paperButton.setText(_translate("MainWindow", "Paper"))
-        self.scissorsButton.setText(_translate("MainWindow", "Scissors"))
-        self.throwButton.setText(_translate("MainWindow", "Shoot!"))
-        self.playerWins.setText(_translate("MainWindow", "track player wins here"))
-        self.computerWins.setText(_translate("MainWindow", "track computer wins here"))
+        self.shootButton.setText(_translate("MainWindow", "Shoot!"))
+        self.playerWins.setText(_translate("MainWindow", "Your wins"))
+        self.computerWins.setText(_translate("MainWindow", "Computer wins"))
+        self.choiceLabel.setText(_translate("MainWindow", "So player, will you choose rock paper or scissors?"))
+        self.playerChoiceLabel.setText(_translate("MainWindow", "You chose"))
+        self.computerChoiceLabel.setText(_translate("MainWindow", "Computer chose"))
+        self.winnerLabel.setText(_translate("MainWindow", "TextLabel"))
+        self.roundsButton.setText(_translate("MainWindow", "Enter Rounds"))
 
+    def rounds_clicked(self):
 
-
-    def clicked(self):
         rounds = int(self.roundsInput.text())
-        print(rounds)
 
 
+        print(f'Player set {rounds} rounds')
 
+        self.roundsLabel.setText(f'You have {rounds} rounds remaining!')
+        self.roundsInput.hide()
+        self.roundsButton.hide()
+        self.choiceLabel.show()
+        self.choiceInput.show()
+        self.shootButton.show()
+
+    def shoot_clicked(self):
+        choice = self.choiceInput.text().lower().strip()
+
+        self.playerChoiceImage.setPixmap(QtGui.QPixmap(choice))
+        comp_num = randint(0,2)
+
+        if comp_num == 0:
+            comp_choice = "rock"
+        elif comp_num == 1:
+            comp_choice = "paper"
+        else:
+            comp_choice = "scissors"
+
+
+        self.computerChoiceImage.setPixmap(QtGui.QPixmap(comp_choice))
+        self.winner(choice, comp_choice)
+    #FIXME(this fucntion needs to be reworked to track winners in a differnt way)
+    def winner(self, choice, comp_choice, player_wins=player_wins, comp_wins=comp_wins):
+        if choice == "rock" and comp_choice == "scissors":
+            print(f'{choice} beats {comp_choice}, player wins')
+            player_wins += 1
+            print(f'player has {player_wins}')
+        elif choice == "paper" and comp_choice == "rock":
+            print(f'{choice} beats {comp_choice}, player wins')
+            player_wins += 1
+        elif choice == "scissors" and comp_choice == "paper":
+            print(f'{choice} beats {comp_choice}, player wins')
+            player_wins += 1
+        elif choice == comp_choice:
+            print(f'{choice} does not beat {comp_choice}, its a draw')
+            player_wins += 0
+        else:
+            print(f'{comp_choice} beats {choice} computer wins')
+            comp_wins += 1
+        print(f'Player has {player_wins} wins, comp has {comp_wins} wins')
 
 
 
