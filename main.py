@@ -1,9 +1,13 @@
 from gui import *
-
+import sys
 
 def main():
-    Ui_MainWindow()
-
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 
 
 
