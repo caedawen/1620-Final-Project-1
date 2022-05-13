@@ -1,7 +1,6 @@
 from gui import *
 import sys
 
-
 def main():
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
